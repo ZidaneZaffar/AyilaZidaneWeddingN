@@ -1,0 +1,299 @@
+{
+  "meta": {
+    "title": "The Wedding of Ayila & Zidane",
+    "description": "Anda diundang dengan hormat untuk menghadiri pernikahan Ayila & Zidane pada tanggal 24 Oktober 2026.",
+    "ogImage": "",
+    "brand": "NIKAHIN",
+    "siteUrl": ""
+  },
+  "hero": {
+    "badge": "Coming Soon",
+    "bride": "Ayila",
+    "groom": "Zidane",
+    "hashtag": "#ZAforever",
+    "date": "2026-10-24",
+    "dateLabel": "24 Oktober 2026",
+    "topBadge": "TOP 1",
+    "description": "Anda diundang dengan hormat untuk menghadiri pernikahan Ayila & Zidane pada tanggal 24 Oktober 2026.",
+    "image": "",
+    "playLabel": "Putar",
+    "moreLabel": "Selengkapnya",
+    "genres": [
+      "Series",
+      "Romance",
+      "Wedding",
+      "2026"
+    ],
+    "myListLabel": "Simpan Tanggal"
+  },
+  "quote": {
+    "text": "We found in each other a home, a safe place, and a reason to believe that forever is real."
+  },
+  "couple": {
+    "label": "Lead Actor",
+    "title": "Calon Mempelai",
+    "subtitle": "Kenali siapa yang akan menikah",
+    "bride": {
+      "name": "Ayila Adzkiya Sucahyo",
+      "role": "Mempelai Wanita",
+      "parents": "Putri dari Bapak Agung Sucahyo & Ibu Lina B. Tusianti",
+      "instagram": "",
+      "image": ""
+    },
+    "groom": {
+      "name": "M. Zidane Zaffar",
+      "role": "Mempelai Pria",
+      "parents": "Putra dari Bapak Sabar Sundarelawan & Ibu Alm. Susie Santika, Ibu Wafa Rahayu Fauziah",
+      "instagram": "",
+      "image": ""
+    }
+  },
+  "events": {
+    "label": "Now Showing",
+    "title": "Jadwal Acara",
+    "subtitle": "Catat tanggalnya, jangan sampai terlewat",
+    "items": [
+      {
+        "name": "Akad Nikah",
+        "date": "2026-10-24",
+        "dateLabel": "Sabtu, 24 Oktober 2026",
+        "time": "14.00 - 16.00 WIB",
+        "venue": "ARTOTEL Living World Kota Wisata",
+        "address": "Jl. Boulevard Kota Wisata, Ciangsana, Gn. Putri, Bogor 16968",
+        "mapsUrl": "https://maps.google.com/?q=ARTOTEL+Living+World+Kota+Wisata"
+      },
+      {
+        "name": "Resepsi",
+        "date": "2026-10-24",
+        "dateLabel": "Sabtu, 24 Oktober 2026",
+        "time": "19.00 - 21.00 WIB",
+        "venue": "ARTOTEL Living World Kota Wisata",
+        "address": "Jl. Boulevard Kota Wisata, Ciangsana, Gn. Putri, Bogor 16968",
+        "mapsUrl": "https://maps.google.com/?q=ARTOTEL+Living+World+Kota+Wisata"
+      }
+    ],
+    "timelineLabel": "Timeline",
+    "timelineEnd": "Oktober 2026"
+  },
+  "story": {
+    "label": "Original Series",
+    "title": "Cerita Kami",
+    "subtitle": "Season 1 - Permulaan",
+    "episodes": [
+      {
+        "title": "The First Chapter",
+        "date": "2024",
+        "summary": "Sebuah pertemuan yang menjadi awal dari semuanya.",
+        "body": "Tulis cerita lengkapnya di sini. Bagian ini muncul saat episode dibuka.",
+        "image": ""
+      },
+      {
+        "title": "Where It All Began",
+        "date": "2024",
+        "summary": "Percakapan pertama yang membuka semuanya.",
+        "body": "Tulis cerita lengkapnya di sini.",
+        "image": ""
+      },
+      {
+        "title": "First Date",
+        "date": "2024",
+        "summary": "Secangkir kopi menjadi saksi kisah kami.",
+        "body": "Tulis cerita lengkapnya di sini.",
+        "image": ""
+      },
+      {
+        "title": "Moving Forward",
+        "date": "2025",
+        "summary": "Melangkah menuju komitmen seumur hidup.",
+        "body": "Tulis cerita lengkapnya di sini.",
+        "image": ""
+      },
+      {
+        "title": "The Rest of Our Lives",
+        "date": "Oktober 2026",
+        "summary": "Babak baru dimulai sebagai suami dan istri.",
+        "body": "Tulis cerita lengkapnya di sini.",
+        "image": ""
+      }
+    ]
+  },
+  "gallery": {
+    "label": "Curated",
+    "title": "Pilihan Untuk Kamu",
+    "subtitle": "Momen pra-nikah, dipilih secara khusus",
+    "rowTitle": "Pilihan teratas hari ini untukmu",
+    "items": [
+      {
+        "image": "",
+        "badge": "Episode Baru"
+      },
+      {
+        "image": "",
+        "badge": "Episode Baru"
+      },
+      {
+        "image": "",
+        "badge": "Baru Ditambahkan"
+      },
+      {
+        "image": "",
+        "badge": ""
+      }
+    ],
+    "topTitle": "Karena kamu suka romansa",
+    "topItems": [
+      {
+        "image": "",
+        "badge": ""
+      },
+      {
+        "image": "",
+        "badge": "Baru Ditambahkan"
+      },
+      {
+        "image": "",
+        "badge": ""
+      },
+      {
+        "image": "",
+        "badge": ""
+      },
+      {
+        "image": "",
+        "badge": ""
+      },
+      {
+        "image": "",
+        "badge": ""
+      }
+    ]
+  },
+  "countdown": {
+    "label": "Premiere",
+    "title": "Menuju Hari Bahagia",
+    "target": "2026-10-24T14:00:00+07:00"
+  },
+  "rsvp": {
+    "label": "Audience",
+    "title": "Konfirmasi Kehadiran",
+    "subtitle": "Beri tahu kami apakah kamu bisa hadir",
+    "maxGuests": 2,
+    "wishesTitle": "Ulasan Penonton",
+    "wishesSubtitle": "Doa dan ucapan dari orang-orang tersayang"
+  },
+  "gift": {
+    "label": "Bonus Content",
+    "title": "Kirim Hadiah",
+    "subtitle": "Kehadiranmu sudah cukup, tapi jika ingin berbagi kebahagiaan:",
+    "accounts": [
+      {
+        "bank": "BANK_NAME",
+        "number": "0000000000",
+        "holder": "Nama Pemilik Rekening"
+      }
+    ],
+    "address": {
+      "recipient": "Ayila & Zidane",
+      "line": "Pesona Sanfrancisco Q2/21 Kota Wisata, Ciangsana, Gn. Putri, Bogor 16968"
+    }
+  },
+  "closing": {
+    "title": "Sampai Jumpa di Hari Bahagia Kami",
+    "text": "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.",
+    "names": "Ayila & Zidane"
+  },
+  "music": {
+    "title": "Judul Lagu",
+    "artist": "Nama Artis",
+    "src": "",
+    "autoplay": true
+  },
+  "app": {
+    "homeLabel": "Home",
+    "chips": [
+      {
+        "label": "Akad",
+        "target": "events"
+      },
+      {
+        "label": "Resepsi",
+        "target": "events"
+      },
+      {
+        "label": "Cerita",
+        "target": "story"
+      },
+      {
+        "label": "Galeri",
+        "target": "gallery"
+      },
+      {
+        "label": "RSVP",
+        "target": "rsvp"
+      }
+    ],
+    "continueTitle": "Lanjutkan menonton untuk {guest}",
+    "navHome": "Home",
+    "navStory": "Episode",
+    "navSearch": "Cari",
+    "navProfile": "Profil"
+  },
+  "eggs": {
+    "enabled": true,
+    "title": "Easter Egg",
+    "intro": "Ada {n} rahasia tersembunyi di undangan ini. Temukan semuanya, jawabannya bakal berguna pas Kahoot di acara nanti.",
+    "foundLabel": "Ditemukan",
+    "finalTitle": "Semua Rahasia Terbuka",
+    "finalText": "Kamu udah nemu semuanya. Simpan baik-baik, sebut kata kunci ini ke MC saat sesi Kahoot: NIKAHIN.",
+    "items": [
+      {
+        "trigger": "logoTap",
+        "keyword": "",
+        "title": "Pilot Episode",
+        "hint": "Logo merah itu bukan cuma hiasan. Ketuk 7 kali.",
+        "text": "Fakta #1: tulis di sini sesuatu yang bakal jadi pertanyaan Kahoot, misalnya tempat pertama kali ketemu.",
+        "image": ""
+      },
+      {
+        "trigger": "search",
+        "keyword": "kopi",
+        "title": "Secangkir Saksi",
+        "hint": "Coba cari sesuatu yang jadi saksi first date kami.",
+        "text": "Fakta #2: nama kedai kopi first date. Tulis di sini.",
+        "image": ""
+      },
+      {
+        "trigger": "coupleHold",
+        "keyword": "",
+        "title": "Behind the Scenes",
+        "hint": "Tahan foto salah satu mempelai beberapa detik.",
+        "text": "Fakta #3: panggilan sayang / kebiasaan unik. Tulis di sini.",
+        "image": ""
+      },
+      {
+        "trigger": "topBadge",
+        "keyword": "",
+        "title": "Number One",
+        "hint": "Peringkat nomor satu di hero, ketuk 3 kali.",
+        "text": "Fakta #4: tanggal jadian. Tulis di sini.",
+        "image": ""
+      },
+      {
+        "trigger": "allEpisodes",
+        "keyword": "",
+        "title": "Binge Watcher",
+        "hint": "Tonton semua episode Cerita Kami sampai habis.",
+        "text": "Fakta #5: siapa yang nembak duluan. Tulis di sini.",
+        "image": ""
+      },
+      {
+        "trigger": "footerTap",
+        "keyword": "",
+        "title": "Post-Credit Scene",
+        "hint": "Scroll sampai paling bawah, ketuk logo 5 kali.",
+        "text": "Fakta #6: rencana honeymoon. Tulis di sini.",
+        "image": ""
+      }
+    ]
+  }
+}
