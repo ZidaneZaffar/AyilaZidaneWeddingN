@@ -11,7 +11,11 @@ export async function GET() {
 export async function PUT(req: Request) {
   if (!isAdmin()) return unauthorized();
   const body = await req.json();
-  await saveContent(body.content);
+  try {
+    await saveContent(body.content);
+  } catch (e: any) {
+    return Response.json({ error: e.message }, { status: 500 });
+  }
   revalidatePath("/");
   return Response.json({ ok: true });
 }

@@ -151,7 +151,10 @@ export default function Admin() {
     if (r.ok) {
       setDirty(false);
       setMsg("Tersimpan " + new Date().toLocaleTimeString("id-ID"));
-    } else setMsg("Gagal menyimpan: " + ((await r.json()).error || r.status));
+    } else {
+      const d = await r.json().catch(() => ({}));
+      setMsg("Gagal menyimpan: " + (d.error || r.status));
+    }
   };
 
   if (authed === null) return <div className="adm" style={{ color: "var(--muted)" }}>Memuat...</div>;
