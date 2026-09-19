@@ -1,6 +1,4 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import fs from "fs";
-import path from "path";
 import defaultContent from "@/data/content.json";
 
 export type Content = typeof defaultContent;
@@ -34,46 +32,15 @@ export function supabase(): SupabaseClient | null {
 
 export const isPreview = () => !supabase();
 
-/* ---------- fallback store (no Supabase): JSON file + memory ---------- */
-const contentFile = path.join(process.cwd(), "data", "content.json");
-const mem: { content: Content | null; rsvps: Rsvp[]; guests: Guest[] } = {
-  content: null,
+/* ---------- fallback store (no Supabase): memory only ---------- */
+const mem: { rsvps: Rsvp[]; guests: Guest[] } = {
   rsvps: [],
   guests: [],
 };
 
-function readLocalContent(): Content {
-  if (mem.content) return mem.content;
-  try {
-    return JSON.parse(fs.readFileSync(contentFile, "utf8"));
-  } catch {
-    return defaultContent;
-  }
-}
-
-/* ---------- content ---------- */
+/* ---------- content: always from data/content.json, edited in code ---------- */
 export async function getContent(): Promise<Content> {
-  const sb = supabase();
-  if (!sb) return readLocalContent();
-  const { data } = await sb.from("site_content").select("data").eq("id", 1).maybeSingle();
-  return (data?.data as Content) ?? defaultContent;
-}
-
-export async function saveContent(content: Content): Promise<void> {
-  const sb = supabase();
-  if (!sb) {
-    mem.content = content;
-    try {
-      fs.writeFileSync(contentFile, JSON.stringify(content, null, 2));
-    } catch {
-      /* read-only filesystem (Vercel) - kept in memory only */
-    }
-    return;
-  }
-  const { error } = await sb
-    .from("site_content")
-    .upsert({ id: 1, data: content, updated_at: new Date().toISOString() });
-  if (error) throw new Error(error.message);
+  return defaultContent;
 }
 
 /* ---------- rsvp ---------- */
@@ -144,16 +111,6 @@ export async function deleteGuest(id: string): Promise<void> {
   }
   const { error } = await sb.from("guests").delete().eq("id", id);
   if (error) throw new Error(error.message);
-}
-
-/* ---------- upload ---------- */
-export async function uploadFile(name: string, buf: Buffer, type: string): Promise<string> {
-  const sb = supabase();
-  if (!sb) throw new Error("Upload butuh Supabase. Isi NEXT_PUBLIC_SUPABASE_URL & SUPABASE_SERVICE_ROLE_KEY.");
-  const safe = `${Date.now()}-${name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-  const { error } = await sb.storage.from("media").upload(safe, buf, { contentType: type, upsert: false });
-  if (error) throw new Error(error.message);
-  return sb.storage.from("media").getPublicUrl(safe).data.publicUrl;
 }
 
 export function slugify(s: string) {

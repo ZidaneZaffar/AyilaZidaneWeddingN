@@ -4,104 +4,7 @@ import { useEffect, useState } from "react";
 import type { Content, Guest, Rsvp } from "@/lib/db";
 import "./admin.css";
 
-/* ---------- path helpers ---------- */
-type Path = (string | number)[];
-const get = (o: any, p: Path) => p.reduce((a, k) => (a == null ? a : a[k]), o);
-function set(o: any, p: Path, v: any): any {
-  if (!p.length) return v;
-  const [k, ...rest] = p;
-  const copy = Array.isArray(o) ? [...o] : { ...(o || {}) };
-  copy[k as any] = set(o?.[k as any], rest, v);
-  return copy;
-}
-
-
-/* ---------- context so field components keep identity between renders ---------- */
-import { createContext, useContext } from "react";
-const Ctx = createContext<{ c: Content; upd: (p: Path, v: any) => void; setMsg: (s: string) => void }>(null as any);
-const useCtx = () => useContext(Ctx);
-
-function F({ p, label, type = "text", area = false, hint }: { p: Path; label: string; type?: string; area?: boolean; hint?: string }) {
-  const { c, upd } = useCtx();
-  return (
-  <div className="f">
-    <label>{label}</label>
-    {area ? (
-      <textarea className="input" value={get(c, p) ?? ""} onChange={(e) => upd(p, e.target.value)} />
-    ) : (
-      <input className="input" type={type} value={get(c, p) ?? ""} onChange={(e) => upd(p, type === "number" ? Number(e.target.value) : e.target.value)} />
-    )}
-    {hint && <small style={{ color: "var(--muted2)", fontSize: 11 }}>{hint}</small>}
-  </div>
-);
-}
-
-function Up({ p, label, accept = "image/*" }: { p: Path; label: string; accept?: string }) {
-  const { c, upd, setMsg } = useCtx();
-  const v = get(c, p) || "";
-  const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    setMsg("Mengunggah " + f.name + "...");
-    const fd = new FormData();
-    fd.append("file", f);
-    const r = await fetch("/api/admin/upload", { method: "POST", body: fd });
-    const d = await r.json();
-    if (r.ok) {
-      upd(p, d.url);
-      setMsg("Terunggah. Jangan lupa Simpan.");
-    } else setMsg("Upload gagal: " + d.error);
-  }
-  return (
-    <div className="f">
-      <label>{label}</label>
-      <div className="upload">
-        {v && accept.startsWith("image") && <img className="thumb" src={v} alt="" />}
-        <input className="input" value={v} placeholder="https://... (atau unggah)" onChange={(e) => upd(p, e.target.value)} />
-        <label className="mini">
-          Unggah
-          <input type="file" accept={accept} hidden onChange={onFile} />
-        </label>
-      </div>
-    </div>
-  );
-}
-
-function ListCtl({ p, i }: { p: Path; i: number }) {
-  const { c, upd } = useCtx();
-  const arr: any[] = get(c, p) || [];
-  const move = (d: number) => {
-    const a = [...arr];
-    const j = i + d;
-    if (j < 0 || j >= a.length) return;
-    [a[i], a[j]] = [a[j], a[i]];
-    upd(p, a);
-  }
-  return (
-    <div style={{ display: "flex", gap: 6 }}>
-      <button className="mini" onClick={() => move(-1)} disabled={i === 0}>↑</button>
-      <button className="mini" onClick={() => move(1)} disabled={i === arr.length - 1}>↓</button>
-      <button className="mini danger" onClick={() => confirm("Hapus item ini?") && upd(p, arr.filter((_, k) => k !== i))}>Hapus</button>
-    </div>
-  );
-}
-function AddBtn({ p, blank, label }: { p: Path; blank: any; label: string }) {
-  const { c, upd } = useCtx();
-  return (
-  <button className="mini" onClick={() => upd(p, [...(get(c, p) || []), blank])}>+ {label}</button>
-);
-}
-
-
-const TABS = ["Umum", "Mempelai", "Acara", "Cerita", "Galeri", "RSVP & Hadiah", "Easter Egg", "Tamu", "Data RSVP"];
-const TRIGGERS: [string, string][] = [
-  ["logoTap", "Ketuk logo di app bar 7x"],
-  ["topBadge", "Ketuk badge TOP 1 di hero 3x"],
-  ["coupleHold", "Tahan foto mempelai 1.2 detik"],
-  ["search", "Ketik kata kunci di menu Cari"],
-  ["allEpisodes", "Buka semua episode Cerita Kami"],
-  ["footerTap", "Ketuk logo di footer 5x"],
-];
+const TABS = ["Tamu", "Data RSVP"];
 
 export default function Admin() {
   const [authed, setAuthed] = useState<boolean | null>(null);
@@ -109,9 +12,7 @@ export default function Admin() {
   const [c, setC] = useState<Content | null>(null);
   const [preview, setPreview] = useState(false);
   const [tab, setTab] = useState(0);
-  const [dirty, setDirty] = useState(false);
   const [msg, setMsg] = useState("");
-  const [saving, setSaving] = useState(false);
 
   const load = () =>
     fetch("/api/admin/content").then(async (r) => {
@@ -139,24 +40,6 @@ export default function Admin() {
     setC(null);
   };
 
-  const upd = (p: Path, v: any) => {
-    setC((prev) => set(prev, p, v));
-    setDirty(true);
-  };
-  const save = async () => {
-    setSaving(true);
-    setMsg("");
-    const r = await fetch("/api/admin/content", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ content: c }) });
-    setSaving(false);
-    if (r.ok) {
-      setDirty(false);
-      setMsg("Tersimpan " + new Date().toLocaleTimeString("id-ID"));
-    } else {
-      const d = await r.json().catch(() => ({}));
-      setMsg("Gagal menyimpan: " + (d.error || r.status));
-    }
-  };
-
   if (authed === null) return <div className="adm" style={{ color: "var(--muted)" }}>Memuat...</div>;
   if (!authed)
     return (
@@ -170,7 +53,6 @@ export default function Admin() {
   if (!c) return null;
 
   return (
-    <Ctx.Provider value={{ c, upd, setMsg }}>
     <div className="adm">
       <div className="adm-top">
         <h1><span className="brand">{c.meta.brand}</span> Admin</h1>
@@ -179,9 +61,10 @@ export default function Admin() {
           <a href="#" onClick={(e) => { e.preventDefault(); logout(); }}>Keluar</a>
         </div>
       </div>
+      <p className="note">Konten undangan (teks &amp; foto) diedit langsung di kode, di file data/content.json. Halaman ini hanya untuk kelola tamu &amp; lihat RSVP.</p>
       {preview && (
         <div className="warn">
-          Mode preview: Supabase belum terhubung. Perubahan konten tidak permanen di Vercel, upload foto nonaktif, dan RSVP hilang saat server restart. Isi env Supabase untuk mengaktifkan.
+          Mode preview: Supabase belum terhubung. Daftar tamu &amp; RSVP hanya tersimpan sementara dan hilang saat server restart. Isi env Supabase untuk mengaktifkan secara permanen.
         </div>
       )}
       <div className="tabs">
@@ -190,302 +73,9 @@ export default function Admin() {
         ))}
       </div>
 
-      {tab === 0 && (
-        <>
-          <div className="panel">
-            <h2>Meta &amp; Brand</h2>
-            <F p={["meta", "brand"]} label="Nama brand (logo merah)" />
-            <F p={["meta", "title"]} label="Judul tab / share" />
-            <F p={["meta", "description"]} label="Deskripsi share (WhatsApp/IG)" area />
-            <Up p={["meta", "ogImage"]} label="Gambar share (1200x630)" />
-          </div>
-          <div className="panel">
-            <h2>Hero</h2>
-            <div className="row2">
-              <F p={["hero", "bride"]} label="Nama panggilan wanita" />
-              <F p={["hero", "groom"]} label="Nama panggilan pria" />
-            </div>
-            <div className="row2">
-              <F p={["hero", "badge"]} label="Badge (Coming Soon)" />
-              <F p={["hero", "hashtag"]} label="Hashtag" />
-            </div>
-            <div className="row2">
-              <F p={["hero", "date"]} label="Tanggal (YYYY-MM-DD)" />
-              <F p={["hero", "dateLabel"]} label="Tanggal (tampilan)" />
-            </div>
-            <F p={["hero", "topBadge"]} label="Badge kecil (TOP 1)" />
-            <div className="f">
-              <label>Genre tags (pisahkan koma)</label>
-              <input className="input" value={(c.hero.genres || []).join(", ")} onChange={(e) => upd(["hero", "genres"], e.target.value.split(",").map((x) => x.trim()).filter(Boolean))} />
-            </div>
-            <F p={["hero", "description"]} label="Deskripsi" area />
-            <Up p={["hero", "image"]} label="Foto latar hero (potrait)" />
-            <div className="row2">
-              <F p={["hero", "playLabel"]} label="Tombol Putar" />
-              <F p={["hero", "myListLabel"]} label="Tombol Simpan Tanggal" />
-            </div>
-          </div>
-          <div className="panel">
-            <h2>App Bar &amp; Navigasi</h2>
-            <F p={["app", "homeLabel"]} label="Judul app bar" />
-            <F p={["app", "continueTitle"]} label="Judul baris lanjutkan menonton" hint="{guest} diganti nama tamu" />
-            <div className="row2">
-              <F p={["app", "navHome"]} label="Nav 1" />
-              <F p={["app", "navStory"]} label="Nav 2" />
-            </div>
-            <div className="row2">
-              <F p={["app", "navSearch"]} label="Nav 3" />
-              <F p={["app", "navProfile"]} label="Nav 4" />
-            </div>
-            <h3>Chips (tombol pintas di bawah app bar)</h3>
-            {c.app.chips.map((_, i) => (
-              <div className="item" key={i}>
-                <div className="item-head"><b>Chip {i + 1}</b><ListCtl p={["app", "chips"]} i={i} /></div>
-                <div className="row2">
-                  <F p={["app", "chips", i, "label"]} label="Label" />
-                  <div className="f">
-                    <label>Tujuan</label>
-                    <select className="input" value={get(c, ["app", "chips", i, "target"])} onChange={(e) => upd(["app", "chips", i, "target"], e.target.value)}>
-                      {["top", "couple", "events", "story", "gallery", "countdown", "rsvp", "gift"].map((t) => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            ))}
-            <AddBtn p={["app", "chips"]} label="Tambah chip" blank={{ label: "Baru", target: "top" }} />
-          </div>
-          <div className="panel">
-            <h2>Kutipan</h2>
-            <F p={["quote", "text"]} label="Teks kutipan" area />
-          </div>
-          <div className="panel">
-            <h2>Musik</h2>
-            <div className="row2">
-              <F p={["music", "title"]} label="Judul lagu" />
-              <F p={["music", "artist"]} label="Artis" />
-            </div>
-            <Up p={["music", "src"]} label="File audio (mp3)" accept="audio/*" />
-            <label style={{ fontSize: 13, display: "flex", gap: 8, alignItems: "center" }}>
-              <input type="checkbox" checked={!!c.music.autoplay} onChange={(e) => upd(["music", "autoplay"], e.target.checked)} /> Putar otomatis saat undangan dibuka
-            </label>
-          </div>
-          <div className="panel">
-            <h2>Countdown &amp; Penutup</h2>
-            <F p={["countdown", "target"]} label="Target countdown (ISO, contoh 2026-10-24T14:00:00+07:00)" />
-            <div className="row2">
-              <F p={["countdown", "label"]} label="Label kecil" />
-              <F p={["countdown", "title"]} label="Judul" />
-            </div>
-            <F p={["closing", "title"]} label="Judul penutup" />
-            <F p={["closing", "text"]} label="Teks penutup" area />
-            <F p={["closing", "names"]} label="Nama (pisahkan dengan &)" />
-          </div>
-        </>
-      )}
-
-      {tab === 1 && (
-        <>
-          <div className="panel">
-            <h2>Judul Section</h2>
-            <div className="row2">
-              <F p={["couple", "label"]} label="Label kecil" />
-              <F p={["couple", "title"]} label="Judul" />
-            </div>
-            <F p={["couple", "subtitle"]} label="Sub judul" />
-          </div>
-          {(["bride", "groom"] as const).map((k) => (
-            <div className="panel" key={k}>
-              <h2>{k === "bride" ? "Mempelai Wanita" : "Mempelai Pria"}</h2>
-              <F p={["couple", k, "name"]} label="Nama lengkap" />
-              <F p={["couple", k, "role"]} label="Peran" />
-              <F p={["couple", k, "parents"]} label="Orang tua" area />
-              <F p={["couple", k, "instagram"]} label="Instagram (tanpa @)" />
-              <Up p={["couple", k, "image"]} label="Foto (potrait 3:4)" />
-            </div>
-          ))}
-        </>
-      )}
-
-      {tab === 2 && (
-        <>
-          <div className="panel">
-            <h2>Judul Section</h2>
-            <div className="row2">
-              <F p={["events", "label"]} label="Label kecil" />
-              <F p={["events", "title"]} label="Judul" />
-            </div>
-            <F p={["events", "subtitle"]} label="Sub judul" />
-            <div className="row2">
-              <F p={["events", "timelineLabel"]} label="Label timeline" />
-              <F p={["events", "timelineEnd"]} label="Teks kanan timeline" />
-            </div>
-          </div>
-          {c.events.items.map((_, i) => (
-            <div className="item" key={i}>
-              <div className="item-head"><b>Acara {i + 1}</b><ListCtl p={["events", "items"]} i={i} /></div>
-              <F p={["events", "items", i, "name"]} label="Nama acara" />
-              <div className="row2">
-                <F p={["events", "items", i, "date"]} label="Tanggal (YYYY-MM-DD)" />
-                <F p={["events", "items", i, "dateLabel"]} label="Tanggal (tampilan)" />
-              </div>
-              <F p={["events", "items", i, "time"]} label="Jam" />
-              <F p={["events", "items", i, "venue"]} label="Tempat" />
-              <F p={["events", "items", i, "address"]} label="Alamat" area />
-              <F p={["events", "items", i, "mapsUrl"]} label="Link Google Maps" />
-            </div>
-          ))}
-          <AddBtn p={["events", "items"]} label="Tambah acara" blank={{ name: "Acara Baru", date: c.hero.date, dateLabel: c.hero.dateLabel, time: "", venue: "", address: "", mapsUrl: "" }} />
-        </>
-      )}
-
-      {tab === 3 && (
-        <>
-          <div className="panel">
-            <h2>Judul Section</h2>
-            <div className="row2">
-              <F p={["story", "label"]} label="Label kecil" />
-              <F p={["story", "title"]} label="Judul" />
-            </div>
-            <F p={["story", "subtitle"]} label="Sub judul" />
-          </div>
-          {c.story.episodes.map((_, i) => (
-            <div className="item" key={i}>
-              <div className="item-head"><b>Episode {String(i + 1).padStart(2, "0")}</b><ListCtl p={["story", "episodes"]} i={i} /></div>
-              <div className="row2">
-                <F p={["story", "episodes", i, "title"]} label="Judul" />
-                <F p={["story", "episodes", i, "date"]} label="Waktu (bebas)" />
-              </div>
-              <F p={["story", "episodes", i, "summary"]} label="Ringkasan (1 kalimat)" />
-              <F p={["story", "episodes", i, "body"]} label="Cerita lengkap (muncul saat dibuka)" area />
-              <Up p={["story", "episodes", i, "image"]} label="Foto" />
-            </div>
-          ))}
-          <AddBtn p={["story", "episodes"]} label="Tambah episode" blank={{ title: "Episode Baru", date: "", summary: "", body: "", image: "" }} />
-        </>
-      )}
-
-      {tab === 4 && (
-        <>
-          <div className="panel">
-            <h2>Judul Section</h2>
-            <div className="row2">
-              <F p={["gallery", "label"]} label="Label kecil" />
-              <F p={["gallery", "title"]} label="Judul" />
-            </div>
-            <F p={["gallery", "subtitle"]} label="Sub judul" />
-            <F p={["gallery", "rowTitle"]} label="Judul baris 1" />
-            <F p={["gallery", "topTitle"]} label="Judul baris 2 (Top list)" />
-          </div>
-          <div className="panel">
-            <h2>Baris 1</h2>
-            {c.gallery.items.map((_, i) => (
-              <div className="item" key={i}>
-                <div className="item-head"><b>Foto {i + 1}</b><ListCtl p={["gallery", "items"]} i={i} /></div>
-                <Up p={["gallery", "items", i, "image"]} label="Foto (potrait 2:3)" />
-                <F p={["gallery", "items", i, "badge"]} label="Badge (kosongkan jika tidak perlu)" hint='"Baru Ditambahkan" tampil putih, lainnya merah' />
-              </div>
-            ))}
-            <AddBtn p={["gallery", "items"]} label="Tambah foto" blank={{ image: "", badge: "" }} />
-          </div>
-          <div className="panel">
-            <h2>Baris 2 (Top list bernomor)</h2>
-            {c.gallery.topItems.map((_, i) => (
-              <div className="item" key={i}>
-                <div className="item-head"><b>#{i + 1}</b><ListCtl p={["gallery", "topItems"]} i={i} /></div>
-                <Up p={["gallery", "topItems", i, "image"]} label="Foto (potrait 2:3)" />
-                <F p={["gallery", "topItems", i, "badge"]} label="Badge" />
-              </div>
-            ))}
-            <AddBtn p={["gallery", "topItems"]} label="Tambah foto" blank={{ image: "", badge: "" }} />
-          </div>
-        </>
-      )}
-
-      {tab === 5 && (
-        <>
-          <div className="panel">
-            <h2>RSVP</h2>
-            <div className="row2">
-              <F p={["rsvp", "label"]} label="Label kecil" />
-              <F p={["rsvp", "title"]} label="Judul" />
-            </div>
-            <F p={["rsvp", "subtitle"]} label="Sub judul" />
-            <F p={["rsvp", "maxGuests"]} label="Maks. tamu per undangan" type="number" />
-            <div className="row2">
-              <F p={["rsvp", "wishesTitle"]} label="Judul ucapan" />
-              <F p={["rsvp", "wishesSubtitle"]} label="Sub judul ucapan" />
-            </div>
-          </div>
-          <div className="panel">
-            <h2>Hadiah</h2>
-            <div className="row2">
-              <F p={["gift", "label"]} label="Label kecil" />
-              <F p={["gift", "title"]} label="Judul" />
-            </div>
-            <F p={["gift", "subtitle"]} label="Sub judul" area />
-            <h3>Rekening</h3>
-            {c.gift.accounts.map((_, i) => (
-              <div className="item" key={i}>
-                <div className="item-head"><b>Rekening {i + 1}</b><ListCtl p={["gift", "accounts"]} i={i} /></div>
-                <F p={["gift", "accounts", i, "bank"]} label="Bank / e-wallet" />
-                <F p={["gift", "accounts", i, "number"]} label="Nomor" />
-                <F p={["gift", "accounts", i, "holder"]} label="Atas nama" />
-              </div>
-            ))}
-            <AddBtn p={["gift", "accounts"]} label="Tambah rekening" blank={{ bank: "", number: "", holder: "" }} />
-            <h3>Alamat kirim kado</h3>
-            <F p={["gift", "address", "recipient"]} label="Penerima" />
-            <F p={["gift", "address", "line"]} label="Alamat (kosongkan untuk sembunyikan)" area />
-          </div>
-        </>
-      )}
-
-      {tab === 6 && (
-        <>
-          <div className="panel">
-            <h2>Easter Egg (buat Kahoot)</h2>
-            <label style={{ fontSize: 13, display: "flex", gap: 8, alignItems: "center", marginBottom: 12 }}>
-              <input type="checkbox" checked={!!c.eggs.enabled} onChange={(e) => upd(["eggs", "enabled"], e.target.checked)} /> Aktifkan easter egg
-            </label>
-            <F p={["eggs", "title"]} label="Judul fitur" />
-            <F p={["eggs", "intro"]} label="Pengantar di halaman profil" area hint="{n} diganti jumlah rahasia" />
-            <F p={["eggs", "foundLabel"]} label="Label progres (Ditemukan x/n)" />
-            <F p={["eggs", "finalTitle"]} label="Judul saat semua ditemukan" />
-            <F p={["eggs", "finalText"]} label="Pesan akhir (kata kunci Kahoot, dll.)" area />
-          </div>
-          {c.eggs.items.map((it, i) => (
-            <div className="item" key={i}>
-              <div className="item-head"><b>Rahasia #{i + 1}</b><ListCtl p={["eggs", "items"]} i={i} /></div>
-              <div className="f">
-                <label>Cara membuka</label>
-                <select className="input" value={it.trigger} onChange={(e) => upd(["eggs", "items", i, "trigger"], e.target.value)}>
-                  {TRIGGERS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-                </select>
-              </div>
-              {it.trigger === "search" && <F p={["eggs", "items", i, "keyword"]} label="Kata kunci (harus persis, tidak peduli huruf besar)" />}
-              <F p={["eggs", "items", i, "title"]} label="Judul rahasia" />
-              <F p={["eggs", "items", i, "hint"]} label="Petunjuk (tampil sebelum ditemukan)" />
-              <F p={["eggs", "items", i, "text"]} label="Isi rahasia (fakta buat Kahoot)" area />
-              <Up p={["eggs", "items", i, "image"]} label="Foto (opsional)" />
-            </div>
-          ))}
-          <AddBtn p={["eggs", "items"]} label="Tambah rahasia" blank={{ trigger: "search", keyword: "", title: "Rahasia Baru", hint: "", text: "", image: "" }} />
-          <p className="note">Tiap cara membuka sebaiknya dipakai satu rahasia saja; kalau dua rahasia pakai cara yang sama, hanya yang pertama yang terbuka.</p>
-        </>
-      )}
-      {tab === 7 && <Guests c={c} />}
-      {tab === 8 && <Rsvps />}
-
-      {tab < 7 && (
-        <div className="savebar">
-          <div className="in">
-            <span className="msg">{dirty ? "Ada perubahan belum disimpan" : msg}</span>
-            <button className="btn btn-red" onClick={save} disabled={saving || !dirty}>{saving ? "Menyimpan..." : "Simpan"}</button>
-          </div>
-        </div>
-      )}
+      {tab === 0 && <Guests c={c} />}
+      {tab === 1 && <Rsvps />}
     </div>
-    </Ctx.Provider>
   );
 }
 
