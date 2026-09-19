@@ -15,7 +15,7 @@
     "dateLabel": "24 Oktober 2026",
     "topBadge": "TOP 1",
     "description": "Anda diundang dengan hormat untuk menghadiri pernikahan Ayila & Zidane pada tanggal 24 Oktober 2026.",
-    "image": "",
+    "image": "/images/hero.jpg",
     "playLabel": "Putar",
     "moreLabel": "Selengkapnya",
     "genres": [
@@ -38,14 +38,14 @@
       "role": "Mempelai Wanita",
       "parents": "Putri dari Bapak Agung Sucahyo & Ibu Lina B. Tusianti",
       "instagram": "",
-      "image": ""
+      "image": "/images/ayila.jpg"
     },
     "groom": {
       "name": "M. Zidane Zaffar",
       "role": "Mempelai Pria",
       "parents": "Putra dari Bapak Sabar Sundarelawan & Ibu Alm. Susie Santika, Ibu Wafa Rahayu Fauziah",
       "instagram": "",
-      "image": ""
+      "image": "/images/zidane.jpg"
     }
   },
   "events": {
@@ -124,11 +124,11 @@
     "rowTitle": "Pilihan teratas hari ini untukmu",
     "items": [
       {
-        "image": "",
+        "image": "/images/gallery-1.jpg",
         "badge": "Episode Baru"
       },
       {
-        "image": "",
+        "image": "/images/gallery-2.jpg",
         "badge": "Episode Baru"
       },
       {
