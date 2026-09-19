@@ -26,6 +26,10 @@ export async function GET(req: Request) {
 export async function DELETE(req: Request) {
   if (!isAdmin()) return unauthorized();
   const { id } = await req.json();
-  await deleteRsvp(id);
+  try {
+    await deleteRsvp(id);
+  } catch (e: any) {
+    return Response.json({ error: e.message }, { status: 500 });
+  }
   return Response.json({ ok: true });
 }
